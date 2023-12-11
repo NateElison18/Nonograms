@@ -4,9 +4,6 @@ body {
 
 div {
     display: flex;
-    border-style: solid;
-    border-width: 1px;
-    border-color: red;
     background-color: lightgray;
 }
 
@@ -29,23 +26,116 @@ div {
     height: 200px;
 }
 #sideKey {
-    background-color: aliceblue;
+    background-color: white;
     height: 600px;
+    flex-direction: column;
 }
 
 #topKey {
     height: 200px;
-    background-color: aliceblue;
+    background-color: white;
 }
 
 #centerBoard {
     min-width: 600px;
     min-height: 600px;
     background-color: white;
+    flex-grow: 1;
+    flex-direction: column;
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+}
+
+#options {
+    align-self: center;
+    justify-self: center;
+    align-items: center;
+    margin-top: 12px;
+    gap: 16px;
+    
 }
 
 #solid,
 #cross {
     width: 50px;
     height: 50px;
+    border-style: solid;
+    border-color: black;
+    align-self: center;
+    border-radius: 8px;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    position: relative;
 }
+
+.check {
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    width: 30px;
+    height: 30px;
+}
+
+#solidFill {
+    width: 35px;
+    height: 35px;
+    background-color: black;
+    border-radius: 8px;
+    border-width: 3px;
+    border-style: solid;
+
+}
+
+#crossFill {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 3px;
+    background-color: lightgray;
+}
+
+.pixel {
+    flex-grow: 1;
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgba(0, 0, 0, 0.25);
+}
+
+
+.row {
+    display: flex;
+    flex-grow: 1;
+}
+
+.numberRow,
+.numberColumn {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 8px;
+    background-color: aliceblue;
+    flex-grow: 1;
+    flex: 1;
+}
+
+.numberRow {
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 8px;
+}
+
+.numberColumn {
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 8px;
+}
+
+.number {
+    background-color: aliceblue;
+    
+}
+
