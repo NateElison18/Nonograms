@@ -1,14 +1,33 @@
+// keyArray = array size of 2: 
+//      an array of the top key and one of the side:
+//          both arrays size 15 (or 12) of arrays for each column or row 
+
+const exampleKeyArray = [
+    [ //Top key (columns):
+        [2, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [2, 1] 
+    ],
+    [ //Side key (rows):
+    
+        [15], [1, 1], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [15] 
+    ]
+];
+let inputMode = 1; // 0 = crossout, 1 = select
+
+buildKeys(15, exampleKeyArray);
 buildBoard(15);
+addEventListeners();
 
 function buildPixel() {
     const pixel = document.createElement('div');
     pixel.setAttribute('class', 'pixel');
+    pixel.setAttribute('mode', 'empty');
 
-    pixel.addEventListener('click', () => {
-        // TODO: Fix this to listen for mode and if its been selected or not
-        pixel.setAttribute('style', 'background-color: black');
-
+    pixel.addEventListener('mousedown', () => {
+        pixelAction(pixel);
     });
+    pixel.addEventListener("mouseover", event => {
+        if (event.buttons == 1) pixelAction(pixel);
+      });
 
     return pixel;
 }
@@ -34,22 +53,6 @@ function buildBoard(size, keyArray) {
     }
 
 }
-
-// keyArray = array size of 2: 
-//      an array of the top key and one of the side:
-//          both arrays size 15 (or 12) of arrays for each column or row 
-
-const exampleKeyArray = [
-    [ //Top key (columns):
-        [2, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [2, 1] 
-    ],
-    [ //Side key (rows):
-    
-        [15], [1, 1], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [15] 
-    ]
-];
-buildKeys(15, exampleKeyArray);
-
 
 function buildKeys(size, key) {
     const topKey = document.querySelector('#topKey');
@@ -78,16 +81,94 @@ function buildKeyRow(size, key) {
     return row;
 }
 
-function buildKeyColumn() {
-    
-}
-
 function buildNumber(key) {
 
     const number = document.createElement('div');
     number.setAttribute('class', 'number');
     number.textContent = key;
-    console.log(key);
     return number;
 }
+
+function addEventListeners() {
+    const solidBtn = document.querySelector('#solid');
+    const crossBtn = document.querySelector('#cross');
+
+    solidBtn.addEventListener('click', () => {
+        solidBtnAction();
+    });
+
+    crossBtn.addEventListener('click', () => {
+        crossBtnAction();
+    });
+}
+
+function solidBtnAction() {
+    if(inputMode === 1) 
+        return
+    const solidCheck = document.querySelector('#solidCheck');
+    const crossCheck = document.querySelector('#crossCheck');
+
+    solidCheck.setAttribute('style', 'visibility: visible');
+    crossCheck.setAttribute('style', 'visibility: hidden');
+
+    inputMode = 1;
+
+}
+
+function crossBtnAction() {
+    if(inputMode === 0) 
+        return
+    const solidCheck = document.querySelector('#solidCheck');
+    const crossCheck = document.querySelector('#crossCheck');
+
+    solidCheck.setAttribute('style', 'visibility: hidden');
+    crossCheck.setAttribute('style', 'visibility: visible');
+
+    inputMode = 0;
+
+}
+
+function pixelAction(pixel) {
+    // TODO: Fix this to listen for mode and if its been selected or not
+    let pixelMode = pixel.getAttribute('mode');
+
+    switch (pixelMode) {
+        case 'empty':
+            if(inputMode)
+                fillPixel(pixel);
+            else
+                crossOutPixel(pixel);
+            break;
+        case 'filled':
+            if(inputMode)
+                erasePixel(pixel);
+            break;
+        case 'crossed':
+            if(!inputMode)
+                erasePixel(pixel);
+            break;
+    }
+
+
+
+}
+
+function fillPixel(pixel) {
+    pixel.setAttribute('class', 'filledPixel');
+    pixel.setAttribute('mode', 'filled');
+
+}
+
+function crossOutPixel(pixel) {
+    pixel.setAttribute('class', 'crossedPixel');
+    pixel.setAttribute('mode', 'crossed');
+}
+
+function erasePixel(pixel) {
+    pixel.setAttribute('class', 'pixel');
+    pixel.setAttribute('mode', 'empty');
+
+}
+
+
 
