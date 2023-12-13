@@ -22,18 +22,19 @@ div {
 }
 
 #cornerSpace {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
 }
 #sideKey {
-    background-color: white;
+    background-color: lightgray;
     height: 600px;
     flex-direction: column;
 }
 
 #topKey {
-    height: 200px;
-    background-color: white;
+    height: 150px;
+    background-color: lightgray;
+    position: relative;
 }
 
 #centerBoard {
@@ -137,7 +138,10 @@ div {
 }
 
 .numberRow,
-.numberColumn {
+.numberColumn,
+.completedRow,
+.completedColumn,
+.hiddenColumn {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
@@ -147,20 +151,69 @@ div {
     flex: 1;
 }
 
-.numberRow {
+.numberRow,
+.completedRow {
     justify-content: flex-end;
     align-items: center;
     padding-right: 8px;
 }
 
-.numberColumn {
+.numberColumn,
+.completedColumn,
+.hiddenColumn {
     flex-direction: column;
     align-items: center;
     padding-bottom: 8px;
 }
 
+.completedRow,
+.completedColumn {
+    background-color: rgb(218, 226, 233);
+}
+
+
 .number {
-    background-color: aliceblue;
-    
+    background-color: transparent;
+}
+
+.hidden,
+.hiddenColumn {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 1s, opacity 1s linear;
+}
+
+
+#endGameDiv {
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    width: 604px;
+    height: fit-content;
+    flex-direction: column;
+    text-align: center;
+    visibility: hidden;   
+}
+
+#visibleEndGame {
+    position:absolute;
+    bottom: 0;
+    right: 0;
+    width: 604px;
+    height: fit-content;
+    flex-direction: column;
+    text-align: center;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 1s linear;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#mainmenu {
+    margin-top: 16px;
 }
 
