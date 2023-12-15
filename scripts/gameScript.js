@@ -1,6 +1,6 @@
 // keyArray = array size of 2: 
 //      an array of the top key and one of the side:
-//          both arrays size 15 (or 12) of arrays for each column or row 
+//          both arrays size 15 (12, 10, or 5) of arrays for each column or row 
 
 const exampleKeyArray = [
     [ //Top key (columns):
@@ -14,7 +14,8 @@ const exampleKeyArray = [
         [0], [0], [0], [0], [0], 
         [0], [0], [0], [0], [13] 
     ],
-    'Example Puzzle'
+    'Example Puzzle',
+    15
 ];
 
 const inputArray = [
@@ -35,10 +36,15 @@ const inputArray = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 let inputMode = 1; // 0 = crossout, 1 = fill
-let boardSize = 15;
+let boardSize = exampleKeyArray[3];
 let correctCount = 0;
+const boardType = document.querySelector('body').getAttribute('id');
 
-buildKeys(boardSize, exampleKeyArray);
+if(boardType === 'puzzle')
+    buildKeys(boardSize, exampleKeyArray);
+else 
+    addDrawEventListeners();
+
 buildBoard(boardSize);
 addEventListeners();
 
@@ -190,7 +196,7 @@ function pixelAction(pixel) {
                 erasePixel(pixel);
             break;
     }
-    if(inputMode)
+    if(inputMode && boardType)
         checkAnswer(pixel.getAttribute('x'), pixel.getAttribute('y'));
 }
 
@@ -321,6 +327,30 @@ function endGame() {
 
 
 }
+
+// Draw Puzzle Functions:
+
+function addDrawEventListeners() {
+    const radioButtons = document.querySelectorAll('.radioBtn');
+    // const radioButtonsArray = Array.from(radioButtons);
+
+    radioButtons.forEach((radioButton) => {
+        radioButton.addEventListener('change', (event) => {
+            eraseBoard();
+            boardSize = event.target.value;
+            console.log(boardSize);
+            buildBoard(boardSize);
+            console.log('Trying to change the board');
+        })
+    });
+}
+
+function eraseBoard() {
+    const centerBoard = document.querySelector('#centerBoard');
+    while(centerBoard.firstChild){
+        centerBoard.removeChild(centerBoard.lastChild);
+    }
+    }
 
 
 
