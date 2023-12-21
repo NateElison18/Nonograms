@@ -2,21 +2,7 @@
 //      an array of the top key and one of the side:
 //          both arrays size 15 (12, 10, or 5) of arrays for each column or row 
 
-const exampleKeyArray = [
-    [ //Top key (columns):
-        [2], [1, 1], [1, 1], [1, 1], [1, 1], 
-        [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], 
-        [1, 1], [1, 1], [1, 1], [1, 1], [2] 
-    ],
-    [ //Side key (rows):
-    
-        [15], [1, 1], [0], [0], [0], 
-        [0], [0], [0], [0], [0], 
-        [0], [0], [0], [0], [13] 
-    ],
-    'Example Puzzle',
-    15
-];
+const exampleKeyArray = getKeyArray();
 
 const inputArray = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -34,10 +20,13 @@ const inputArray = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
+];
+
+let drawnKey = [];
 let inputMode = 1; // 0 = crossout, 1 = fill
 let boardSize = exampleKeyArray[3];
 let correctCount = 0;
+let difficulty = 'hard';
 const boardType = document.querySelector('body').getAttribute('id');
 
 if(boardType === 'puzzle')
@@ -45,8 +34,40 @@ if(boardType === 'puzzle')
 else 
     addDrawEventListeners();
 
-buildBoard(boardSize);
+buildBoard(boardSize, '#centerBoard');
+// buildBoard(boardSize / 3, '#boldedBorders')
 addEventListeners();
+
+console.log(localStorage.getItem('hello'));
+
+function getKeyArray() {
+    let testPuzzleString = localStorage.getItem('testKey');
+    const testArray = JSON.parse(testPuzzleString);
+    console.log(testPuzzleString);
+
+    if(testArray) {
+        localStorage.removeItem('testKey');
+        return testArray;
+    }
+
+    return getRandomPuzzleKey(localStorage.getItem('difficulty'));
+
+}
+
+function getRandomPuzzleKey(difficulty) {
+    const puzzles = JSON.parse(localStorage.getItem('puzzles'));
+
+    console.log(puzzles);
+
+    switch(difficulty) {
+        case 'easy':
+            let randomIndex = Math.floor(Math.random() * puzzles.easy.length);
+            return puzzles.easy[randomIndex];
+        case 'medium':
+
+        case 'hard':
+    }
+}
 
 function buildPixel(xCoordinate, yCoordinate) {
     const pixel = document.createElement('div');
@@ -71,14 +92,17 @@ function buildRow(length, yCoordinate) {
 
     for(let i = 0; i < length; i++) {
         const pixel = buildPixel(i, yCoordinate);
+        // if((i + 1) % (boardSize / 3) === 0) {
+        //     pixel.setAttribute('style', 'border-style: solid; border-right: 2px; border-color: black')
+        // }
         row.appendChild(pixel);
     }
 
     return row;
 }
 
-function buildBoard(size, keyArray) {
-    const board = document.querySelector('#centerBoard');
+function buildBoard(size, divSelector) {
+    const board = document.querySelector(divSelector);
 
     for(let i = 0; i < size; i++) {
         const row = buildRow(size, i);
@@ -104,12 +128,9 @@ function buildKeys(size, key) {
         if(column.getAttribute('zero')) {
             column.setAttribute('class', 'completedRow');
             correctCount++;
-            console.log('found zero attribute');
         } else {
             column.setAttribute('class', 'numberColumn');
         }
-
-        console.log(row.getAttribute('zero'));
         
         row.setAttribute('id', 'row' + i);
         column.setAttribute('id', 'column' + i);
@@ -124,7 +145,6 @@ function buildKeyRow(key) {
     for(let i = 0; i < key.length; i++) {
         const number = buildNumber(key[i]);
         row.appendChild(number);
-        console.log(number.textContent);
         if(number.textContent == 0)
             row.setAttribute('zero', 'true');
     }
@@ -143,9 +163,7 @@ function addEventListeners() {
     const solidBtn = document.querySelector('#solid');
     const crossBtn = document.querySelector('#cross');
 
-    solidBtn.addEventListener('click', () => {
-        solidBtnAction();
-    });
+    solidBtn.addEventListener('click', solidBtnAction);
 
     crossBtn.addEventListener('click', () => {
         crossBtnAction();
@@ -331,18 +349,34 @@ function endGame() {
 // Draw Puzzle Functions:
 
 function addDrawEventListeners() {
-    const radioButtons = document.querySelectorAll('.radioBtn');
-    // const radioButtonsArray = Array.from(radioButtons);
+    const gridSizeButtons = document.querySelectorAll('.radioBtn');
+    const difficultyButtons = document.querySelectorAll('.difficultyBtn');
+    const testBtn = document.querySelector('#test');
+    const finishBtn = document.querySelector('#finish');
 
-    radioButtons.forEach((radioButton) => {
+    gridSizeButtons.forEach((radioButton) => {
         radioButton.addEventListener('change', (event) => {
             eraseBoard();
             boardSize = event.target.value;
-            console.log(boardSize);
-            buildBoard(boardSize);
-            console.log('Trying to change the board');
-        })
+            buildBoard(boardSize, '#centerBoard');
+        });
     });
+
+    difficultyButtons.forEach((radioButton) => {
+        radioButton.addEventListener('change', (event) => {
+            difficulty = event.target.value;
+        });
+    });
+
+    testBtn.addEventListener('click', () => {
+        testPuzzleAction();
+    });
+
+    finishBtn.addEventListener('click', () => {
+        finishPuzzleAction();
+    });
+
+
 }
 
 function eraseBoard() {
@@ -350,7 +384,50 @@ function eraseBoard() {
     while(centerBoard.firstChild){
         centerBoard.removeChild(centerBoard.lastChild);
     }
+}
+
+function testPuzzleAction() {
+    buildDrawnKey();
+    saveKey('testKey');
+    window.open('../pages/puzzle.html', '_blank');
+}
+
+function finishPuzzleAction() {
+    buildDrawnKey();
+    saveKey('drawnKey');
+}
+
+function buildDrawnKey() {
+    const nameInput = document.querySelector('#nameInput');
+    parseKeysFromPixels();
+    drawnKey[2] = nameInput.value;
+    drawnKey[3] = boardSize;
+    drawnKey[4] = difficulty;
+
+    console.log(JSON.stringify(drawnKey[0]));
+    console.log(JSON.stringify(drawnKey[1]));
+}
+
+function parseKeysFromPixels() {
+    const topKey = [];
+    const sideKey = [];
+    for(let i = 0; i < boardSize; i++) {
+        const column = countColumnPixels(i);
+        topKey.push(column);
+
+        const row = countRowPixels(i);
+        sideKey.push(row);
     }
+
+    drawnKey[0] = topKey;
+    drawnKey[1] = sideKey;
+}
+
+function saveKey(key) {
+    let drawnKeyString = JSON.stringify(drawnKey);
+    localStorage.setItem(key, drawnKeyString);
+    //TODO add way to let user know key has been saved
+}
 
 
 
