@@ -1,4 +1,3 @@
-
 (function () {
     const learnToPlay = document.querySelector('#howToPlay');
     const easy = document.querySelector('#easy');
@@ -30,6 +29,10 @@
     if(!localStorage.getItem('puzzles')) {
         addPuzzles();
         console.log('adding puzzles');
+    }
+
+    if(!localStorage.getItem('stats')) {
+        addStats();
     }
 })()
 
@@ -201,4 +204,15 @@ function buildHardPuzzles() {
         'hard' // puzzle difficulty
     ]);
     return puzzles;
+}
+
+function addStats() {
+    const stats = {
+        puzzlesCompleted: 0,
+        puzzlesStarted: 0,
+        puzzlesDrawn: 0
+    };
+
+    let statsString = JSON.stringify(stats);
+    localStorage.setItem('stats', statsString);
 }

@@ -2,7 +2,8 @@
 //      an array of the top key and one of the side:
 //          both arrays size 15 (12, 10, or 5) of arrays for each column or row 
 
-const exampleKeyArray = getKeyArray();
+const keyArray = getKeyArray();
+const stats = getStats();
 
 const inputArray = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -24,21 +25,21 @@ const inputArray = [
 
 let drawnKey = [];
 let inputMode = 1; // 0 = crossout, 1 = fill
-let boardSize = exampleKeyArray[3];
+let boardSize = keyArray[3];
 let correctCount = 0;
 let difficulty = 'hard';
 const boardType = document.querySelector('body').getAttribute('id');
 
-if(boardType === 'puzzle')
-    buildKeys(boardSize, exampleKeyArray);
-else 
+if(boardType === 'puzzle') {
+    buildKeys(boardSize, keyArray);
+    incrementPuzzlesStarted();
+} else {
     addDrawEventListeners();
+    boardSize = 15;
+}
 
 buildBoard(boardSize, '#centerBoard');
-// buildBoard(boardSize / 3, '#boldedBorders')
 addEventListeners();
-
-console.log(localStorage.getItem('hello'));
 
 function getKeyArray() {
     let testPuzzleString = localStorage.getItem('testKey');
@@ -51,22 +52,40 @@ function getKeyArray() {
     }
 
     return getRandomPuzzleKey(localStorage.getItem('difficulty'));
-
 }
 
 function getRandomPuzzleKey(difficulty) {
     const puzzles = JSON.parse(localStorage.getItem('puzzles'));
 
-    console.log(puzzles);
+    let randomIndex;
 
     switch(difficulty) {
         case 'easy':
-            let randomIndex = Math.floor(Math.random() * puzzles.easy.length);
+            randomIndex = Math.floor(Math.random() * puzzles.easy.length);
             return puzzles.easy[randomIndex];
         case 'medium':
-
+            randomIndex = Math.floor(Math.random() * puzzles.medium.length);
+            return puzzles.medium[randomIndex];
         case 'hard':
+            randomIndex = Math.floor(Math.random() * puzzles.hard.length);
+            return puzzles.hard[randomIndex];
     }
+}
+
+function getStats() {
+    let statsString = localStorage.getItem('stats');
+    return JSON.parse(statsString);
+}
+
+function incrementPuzzlesStarted() {
+    stats.puzzlesStarted++;
+    saveStats();
+}
+
+function saveStats() {
+    let statsString = JSON.stringify(stats);
+    localStorage.removeItem('stats');
+    localStorage.setItem('stats', statsString);
 }
 
 function buildPixel(xCoordinate, yCoordinate) {
@@ -75,6 +94,7 @@ function buildPixel(xCoordinate, yCoordinate) {
     pixel.setAttribute('mode', 'empty');
     pixel.setAttribute('x', xCoordinate);
     pixel.setAttribute('y', yCoordinate);
+    
 
     pixel.addEventListener('mousedown', () => {
         pixelAction(pixel);
@@ -88,13 +108,14 @@ function buildPixel(xCoordinate, yCoordinate) {
 
 function buildRow(length, yCoordinate) {
     const row = document.createElement('div');
+    let borderStyle = '';
     row.setAttribute('class', 'row');
 
     for(let i = 0; i < length; i++) {
         const pixel = buildPixel(i, yCoordinate);
-        // if((i + 1) % (boardSize / 3) === 0) {
-        //     pixel.setAttribute('style', 'border-style: solid; border-right: 2px; border-color: black')
-        // }
+        borderStyle = getPixelBorderColor(i, 'vertical');
+        borderStyle = borderStyle + getPixelBorderColor(yCoordinate, 'horizontal')
+        pixel.setAttribute('style', borderStyle);
         row.appendChild(pixel);
     }
 
@@ -108,7 +129,39 @@ function buildBoard(size, divSelector) {
         const row = buildRow(size, i);
         board.appendChild(row);
     }
+}
 
+// Function to add the dark borders to break up the board, make it more readable
+function getPixelBorderColor(i, orientation) {
+    if(boardSize % 3 === 0) {
+        if((i + 1) < boardSize && (i + 1) % (boardSize / 3) === 0) {
+            if(orientation === 'vertical') 
+                return 'border-right-color: rgb(60, 60, 60); ';
+            else
+                return 'border-bottom-color: rgb(60, 60, 60); ';
+        } 
+        else if (i > 0 && i % (boardSize / 3) === 0) {
+            if(orientation === 'vertical')
+                return 'style', 'border-left-color: rgb(60, 60, 60); ';
+            else 
+                return 'style', 'border-top-color: rgb(60, 60, 60); '; 
+        }
+
+    } else if(boardSize % 5 === 0) {
+        if((i + 1) < boardSize && (i + 1) % (boardSize / 2) === 0) {
+            if(orientation === 'vertical') 
+                return 'border-right-color: rgb(60, 60, 60); ';
+            else
+                return 'border-bottom-color: rgb(60, 60, 60); ';
+        } 
+        else if (i > 0 && i % (boardSize / 2) === 0) {
+            if(orientation === 'vertical')
+                return 'style', 'border-left-color: rgb(60, 60, 60); ';
+            else 
+                return 'style', 'border-top-color: rgb(60, 60, 60); '; 
+        }
+    }
+    return ' ';
 }
 
 function buildKeys(size, key) {
@@ -276,14 +329,14 @@ function checkAnswer(xCoordinate, yCoordinate) {
 
 function checkColumn(column) {
     const givenAnswer = countColumnPixels(column).toString();
-    const keyAnswer = exampleKeyArray[0][column].toString();
+    const keyAnswer = keyArray[0][column].toString();
     return (givenAnswer === keyAnswer);
 
 }
 
 function checkRow(row) {
     const givenAnswer = countRowPixels(row).toString();
-    const keyAnswer = exampleKeyArray[1][row].toString();
+    const keyAnswer = keyArray[1][row].toString();
     return (givenAnswer === keyAnswer);
 }
 
@@ -340,7 +393,7 @@ function endGame() {
 
     setTimeout(() => {
         endGameDiv.setAttribute('id', 'visibleEndGame');
-        puzzleName.textContent = exampleKeyArray[2];
+        puzzleName.textContent = keyArray[2];
     }, 1000);
 
 
@@ -384,6 +437,7 @@ function eraseBoard() {
     while(centerBoard.firstChild){
         centerBoard.removeChild(centerBoard.lastChild);
     }
+    drawnKey = [];
 }
 
 function testPuzzleAction() {
