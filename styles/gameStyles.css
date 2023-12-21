@@ -21,7 +21,6 @@ div {
 #sideKeyContainer {
     width: 200px;
     flex-direction: column;
-    /* border-color: rgb(41, 41, 41); */
 }
 
 .cornerSpace {

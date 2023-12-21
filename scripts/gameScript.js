@@ -396,7 +396,13 @@ function endGame() {
         puzzleName.textContent = keyArray[2];
     }, 1000);
 
+    incrementPuzzlesCompleted();
 
+}
+
+function incrementPuzzlesCompleted() {
+    stats.puzzlesCompleted++;
+    saveStats();
 }
 
 // Draw Puzzle Functions:
