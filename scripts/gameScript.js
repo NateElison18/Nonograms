@@ -133,34 +133,24 @@ function buildBoard(size, divSelector) {
 
 // Function to add the dark borders to break up the board, make it more readable
 function getPixelBorderColor(i, orientation) {
-    if(boardSize % 3 === 0) {
-        if((i + 1) < boardSize && (i + 1) % (boardSize / 3) === 0) {
-            if(orientation === 'vertical') 
-                return 'border-right-color: rgb(60, 60, 60); ';
-            else
-                return 'border-bottom-color: rgb(60, 60, 60); ';
-        } 
-        else if (i > 0 && i % (boardSize / 3) === 0) {
-            if(orientation === 'vertical')
-                return 'style', 'border-left-color: rgb(60, 60, 60); ';
-            else 
-                return 'style', 'border-top-color: rgb(60, 60, 60); '; 
-        }
+    if(boardSize % 3 === 0)
+        value = boardSize / 3;
+    else if (boardSize % 5 === 0)
+        value = boardSize / 2;
 
-    } else if(boardSize % 5 === 0) {
-        if((i + 1) < boardSize && (i + 1) % (boardSize / 2) === 0) {
-            if(orientation === 'vertical') 
-                return 'border-right-color: rgb(60, 60, 60); ';
-            else
-                return 'border-bottom-color: rgb(60, 60, 60); ';
+    if((i + 1) < boardSize && (i + 1) % value === 0) {
+        if(orientation === 'vertical') 
+            return 'border-right-color: rgb(60, 60, 60); ';
+        else
+            return 'border-bottom-color: rgb(60, 60, 60); ';
         } 
-        else if (i > 0 && i % (boardSize / 2) === 0) {
-            if(orientation === 'vertical')
-                return 'style', 'border-left-color: rgb(60, 60, 60); ';
-            else 
-                return 'style', 'border-top-color: rgb(60, 60, 60); '; 
-        }
+    else if (i > 0 && i % value === 0) {
+        if(orientation === 'vertical')
+            return 'style', 'border-left-color: rgb(60, 60, 60); ';
+        else 
+            return 'style', 'border-top-color: rgb(60, 60, 60); '; 
     }
+    
     return ' ';
 }
 
