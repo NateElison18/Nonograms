@@ -12,18 +12,18 @@
     // TODO change these to update the puzzle to be displayed on the page
     easy.addEventListener('click', () => {
         localStorage.setItem('difficulty', 'easy')
-        window.location.href = '../pages/puzzle.html';
+        window.location.href = 'pages/puzzle.html';
     });
     medium.addEventListener('click', () => {
         localStorage.setItem('difficulty', 'medium')
-        window.location.href = '../pages/puzzle.html';
+        window.location.href = 'pages/puzzle.html';
     });
     hard.addEventListener('click', () => {
         localStorage.setItem('difficulty', 'hard')
-        window.location.href = '../pages/puzzle.html';
+        window.location.href = 'pages/puzzle.html';
     });
     drawPuzzle.addEventListener('click', () => {
-        window.location.href = '../pages/draw-puzzle.html';
+        window.location.href = 'pages/draw-puzzle.html';
     });
 
     if(!localStorage.getItem('puzzles')) {
