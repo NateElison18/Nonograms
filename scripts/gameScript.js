@@ -444,7 +444,7 @@ function testPuzzleAction() {
 
 function finishPuzzleAction() {
     buildDrawnKey();
-    saveKey('drawnKey');
+    saveKey('drawnKey', drawnKey[4]);
 }
 
 function buildDrawnKey() {
@@ -473,11 +473,34 @@ function parseKeysFromPixels() {
     drawnKey[1] = sideKey;
 }
 
-function saveKey(key) {
+function saveKey(key, difficulty) {
     let drawnKeyString = JSON.stringify(drawnKey);
     localStorage.setItem(key, drawnKeyString);
-    //TODO add way to let user know key has been saved
+    addPuzzleToLocalStorage(difficulty);
+    alert("Puzzle added to the rotation!");
 }
+
+function addPuzzleToLocalStorage(difficulty) {
+    let puzzlesString = localStorage.getItem('puzzles');
+    const puzzles = JSON.parse(puzzlesString);
+
+    switch(difficulty) {
+        case 'easy':
+            puzzles.easy.push(drawnKey);
+            break;
+        case 'medium':
+            puzzles.medium.push(drawnKey);
+            break;
+        case 'hard':
+            puzzles.hard.push(drawnKey);
+            break;
+    }
+
+    puzzlesString = JSON.stringify(puzzles);
+    localStorage.setItem('puzzles', puzzlesString);
+    console.log(localStorage.getItem('puzzles'));
+}
+
 
 
 
